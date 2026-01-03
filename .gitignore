@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# 模型文件（通常很大，建议不上传）
+*.pt
+*.pth
+*.ckpt
+*.h5
+*.pb
+
+# 环境
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 个人配置（可选，如果不想上传可以取消注释）
+.codex/
+.cursor-server/
+.cursor/
+.vscode-server/
+.local/
+.cache/
+.config/
+.docker/
+.dotnet/
+.ssh/
+.python_history
+.bash_history
+.bash_logout
+.bashrc
+.profile
+
+# 日志文件
+*.log
+
+# 数据文件（如果很大）
+# *.csv
+# *.json
+# data/
