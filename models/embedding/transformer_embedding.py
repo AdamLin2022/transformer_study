@@ -10,7 +10,7 @@ class TransformerEmbedding(nn.Module):
     def __init__(self, vocab_size, d_model, max_len, drop_prob, device):
         super(TransformerEmbedding, self).__init__()
         self.tok_emb = TokenEmbedding(vocab_size, d_model)
-        self.pos_emb = PositionalEncoding(d_model, max_len, device)
+        self.pos_emb = PositionalEncoding(d_model, max_len)  # device 不再需要，register_buffer 会自动处理
         self.drop_out = nn.Dropout(p=drop_prob)
 
     def forward(self, x):

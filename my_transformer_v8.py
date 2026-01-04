@@ -54,10 +54,10 @@ class EncoderLayer(nn.Module):
     def forward(self, x, src_mask):
         _x = x
         x = self.attention(x, x, x, src_mask)
-        x = self.norm1(x + self.dropout1(_x))
+        x = self.norm1(_x + self.dropout1(x))  # [修复] dropout 应用于 attention 输出
         _x = x
         x = self.ffn(x)
-        x = self.norm2(x + self.dropout2(_x))
+        x = self.norm2(_x + self.dropout2(x))  # [修复] dropout 应用于 ffn 输出
         return x
 
 class DecoderLayer(nn.Module):
@@ -126,11 +126,11 @@ class Decoder(nn.Module):
         return output
 
 class Transformer(nn.Module):
-    def __init__(self, enc_voc_size, dec_voc_size, d_model, n_head, max_len, ffn_hidden, n_layers, drop_prob, device):
+    def __init__(self, enc_voc_size, dec_voc_size, d_model, n_head, max_len, ffn_hidden, n_layers, drop_prob, device, src_pad_idx=1, trg_pad_idx=1):
         super().__init__()
         self.device = device
-        self.src_pad_idx = 0
-        self.trg_pad_idx = 0
+        self.src_pad_idx = src_pad_idx  # [修复] 使用传入的 pad_idx
+        self.trg_pad_idx = trg_pad_idx
         self.encoder = Encoder(d_model, n_head, max_len, ffn_hidden, enc_voc_size, drop_prob, n_layers, device)
         self.decoder = Decoder(dec_voc_size, max_len, d_model, ffn_hidden, n_head, n_layers, drop_prob, device)
 
@@ -139,7 +139,7 @@ class Transformer(nn.Module):
         return src_mask
 
     def make_trg_mask(self, trg):
-        trg_pad_mask = (trg != self.trg_pad_idx).unsqueeze(1).unsqueeze(3)
+        trg_pad_mask = (trg != self.trg_pad_idx).unsqueeze(1).unsqueeze(2)  # [修复] 正确掩盖 Key 位置
         trg_len = trg.shape[1]
         trg_sub_mask = torch.tril(torch.ones((trg_len, trg_len), device=self.device)).bool()
         trg_mask = trg_pad_mask & trg_sub_mask
